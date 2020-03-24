@@ -1,6 +1,6 @@
 import pandas as pd
 from pandas import DataFrame
-import uuid
+
 from py_config import ConfigFactory
 from py_logging import LoggerFactory
 from py_path import Path
@@ -19,6 +19,12 @@ class DataFileParser():
         fileinfo = Path.splitFullPathFileName(filename)
         newfilename = (newpath + fileinfo.get('sep') + prefix + '_' + fileinfo.get('main') + '.json')
         return newfilename
+
+    # 获取化验元素列表
+    def getElementsDF(self, dataframe: DataFrame):
+        elementsDF = dataframe.iloc[:1]
+        # print(elementsDF)
+        return elementsDF
 
     # 解析 生物氧化表格 解毒流程样
     def swyh_jdlcyWorker(self, swyh_jdlcy_filename: str):
@@ -72,7 +78,12 @@ if __name__ == '__main__':
     # 读取数据
     filename = 'e:/cclasdir/2020生物氧化表格.xlsx'
     newDF = dataFileParser.swyh_jdlcyWorker(swyh_jdlcy_filename=filename)
-    print(newDF.shape)
+    # print(newDF.shape)
+
+    # 获取新数据的各个元素
+    elementsDF = dataFileParser.getElementsDF(newDF)
+    print('========elements==========')
+    print(elementsDF)
 
     # 序列化新数据
     newFile = dataFileParser.filePathNameConverter(filename=filename, prefix='new')
@@ -80,7 +91,11 @@ if __name__ == '__main__':
 
     # 反序列化旧数据
     oldFile = dataFileParser.filePathNameConverter(filename=filename, prefix='old')
+
+    # 扩充旧数据的列内容
     oldDF = dataFileParser.fromSeries(jsonfilename=oldFile)
+    oldDF = pd.concat([elementsDF, oldDF])
+    print(oldDF)
 
     # 反序列化新数据
     newDF = dataFileParser.fromSeries(jsonfilename=newFile)
