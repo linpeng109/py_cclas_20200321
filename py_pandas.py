@@ -44,7 +44,8 @@ class DataFileParser():
         # jdlcyDf.dropna(axis=1, how='all', inplace=True)
         # 6填充空数据
         # jdlcyDf.fillna('', inplace=True)
-        # 7?重新命名列
+
+        # 7重新命名列
         jdlcyDf.columns = elementList
         # 8?重新建立索引
         jdlcyDf.reset_index(drop=True, inplace=True)
@@ -90,19 +91,21 @@ if __name__ == '__main__':
     jdlcyElementDF = dataFileParser.getElementsDF(filename=filename, sheet_name=sheet_name)
     print('===jdlcyElementDF===')
     print(jdlcyElementDF)
+
     jdlcyDF = dataFileParser.getSwyhjdlcyDF(filename=filename)
     print('====jdlcyDF=======')
     print(jdlcyDF)
 
     oldFile = dataFileParser.filePathNameConverter(filename=filename, prefix='old')
     oldDF = dataFileParser.fromSeries(oldFile)
-    oldDF = pd.concat([jdlcyElementDF, oldDF])
+    print('====oldDF=======')
+    print(oldDF)
 
     increamentDF = DataFrame(jdlcyElementDF.values.tolist())
-    increamentDF = pd.concat([oldDF, increamentDF])
-    increamentDF = pd.concat([jdlcyDF, increamentDF]).drop_duplicates(keep=False)
+    oldDF = pd.concat([increamentDF, oldDF]).drop_duplicates(keep=False)
+    increamentDF = pd.concat([increamentDF, jdlcyDF]).drop_duplicates(keep=False)
     print('======increamentDF======')
-    print(increamentDF)
+    print(oldDF)
 
 #
 # year = str(jdlcyDF.iloc[0, 0]).split('-')[0]
