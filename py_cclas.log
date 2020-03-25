@@ -1060,3 +1060,74 @@ Index: []
 2020Mar22-09:20:47 root DEBUG delay=0.01
 2020Mar22-09:20:47 root DEBUG beep=True
 2020Mar22-09:21:58 root DEBUG <FileCreatedEvent: src_path='e:/cclasdir\\2020生物氧化表格.xlsx'>
+2020Mar24-17:22:45 root DEBUG WatchDog Observer is startting.....
+2020Mar24-17:22:45 root DEBUG patterns=['*2020*.XLSX']
+2020Mar24-17:22:45 root DEBUG path=e:/cclasdir
+2020Mar24-17:22:45 root DEBUG delay=0.01
+2020Mar24-17:22:45 root DEBUG beep=True
+2020Mar24-17:23:02 root DEBUG <FileCreatedEvent: src_path='e:/cclasdir\\2020生物氧化表格.xlsx'>
+2020Mar24-17:23:08 root DEBUG <FileCreatedEvent: src_path='e:/cclasdir\\2020生物氧化表格.xlsx'>
+2020Mar24-17:23:49 root DEBUG WatchDog Observer is startting.....
+2020Mar24-17:23:49 root DEBUG patterns=['*2020*.XLSX']
+2020Mar24-17:23:49 root DEBUG path=e:/cclasdir
+2020Mar24-17:23:49 root DEBUG delay=0.01
+2020Mar24-17:23:49 root DEBUG beep=True
+2020Mar24-17:24:05 root DEBUG WatchDog Observer is startting.....
+2020Mar24-17:24:05 root DEBUG patterns=['*2020*.XLSX']
+2020Mar24-17:24:05 root DEBUG path=e:/cclasdir
+2020Mar24-17:24:05 root DEBUG delay=0.01
+2020Mar24-17:24:05 root DEBUG beep=True
+2020Mar24-17:24:15 root DEBUG <FileCreatedEvent: src_path='e:/cclasdir\\2020生物氧化表格.xlsx'>
+2020Mar24-17:24:16 root DEBUG <FileCreatedEvent: src_path='e:/cclasdir\\2020生物氧化表格.xlsx'>
+2020Mar24-17:24:18 root DEBUG <FileCreatedEvent: src_path='e:/cclasdir\\2020生物氧化表格.xlsx'>
+2020Mar24-17:24:20 root DEBUG <FileCreatedEvent: src_path='e:/cclasdir\\2020生物氧化表格.xlsx'>
+2020Mar24-17:24:38 root DEBUG WatchDog Observer is startting.....
+2020Mar24-17:24:38 root DEBUG patterns=['*2020*.XLSX']
+2020Mar24-17:24:38 root DEBUG path=e:/cclasdir
+2020Mar24-17:24:38 root DEBUG delay=0.01
+2020Mar24-17:24:38 root DEBUG beep=True
+2020Mar24-17:24:48 root DEBUG <FileCreatedEvent: src_path='e:/cclasdir\\2020生物氧化表格.xlsx'>
+2020Mar24-17:24:50 root DEBUG <FileCreatedEvent: src_path='e:/cclasdir\\2020生物氧化表格.xlsx'>
+2020Mar24-17:24:57 root DEBUG <FileCreatedEvent: src_path='e:/cclasdir\\2020生物氧化表格.xlsx'>
+2020Mar24-17:24:59 root DEBUG <FileCreatedEvent: src_path='e:/cclasdir\\2020生物氧化表格.xlsx'>
+2020Mar24-17:25:01 root DEBUG <FileCreatedEvent: src_path='e:/cclasdir\\2020生物氧化表格.xlsx'>
+2020Mar24-17:25:04 root DEBUG <FileCreatedEvent: src_path='e:/cclasdir\\2020生物氧化表格.xlsx'>
+2020Mar24-17:25:11 root DEBUG <FileCreatedEvent: src_path='e:/cclasdir\\2020生物氧化表格.xlsx'>
+2020Mar24-17:25:13 root DEBUG <FileCreatedEvent: src_path='e:/cclasdir\\2020生物氧化表格.xlsx'>
+2020Mar24-17:26:36 root DEBUG <FileCreatedEvent: src_path='e:/cclasdir\\2020生物氧化表格.xlsx'>
+2020Mar24-17:28:33 root DEBUG <FileCreatedEvent: src_path='e:/cclasdir\\2020生物氧化表格.xlsx'>
+2020Mar24-17:28:36 root DEBUG <FileCreatedEvent: src_path='e:/cclasdir\\2020生物氧化表格.xlsx'>
+2020Mar24-17:29:13 root DEBUG <FileCreatedEvent: src_path='e:/cclasdir\\2020生物氧化表格.xlsx'>
+2020Mar24-17:29:33 root DEBUG <FileCreatedEvent: src_path='e:/cclasdir\\2020生物氧化表格.xlsx'>
+2020Mar24-17:29:34 root DEBUG <FileCreatedEvent: src_path='e:/cclasdir\\2020生物氧化表格.xlsx'>
+2020Mar24-17:31:17 root DEBUG <FileCreatedEvent: src_path='e:/cclasdir\\2020生物氧化表格.xlsx'>
+2020Mar25-11:16:25 root DEBUG WatchDog Observer is startting.....
+2020Mar25-11:16:25 root DEBUG patterns=['*2020*.XLSX']
+2020Mar25-11:16:25 root DEBUG path=e:/cclasdir
+2020Mar25-11:16:25 root DEBUG delay=0.01
+2020Mar25-11:16:25 root DEBUG beep=True
+2020Mar25-11:19:47 root DEBUG <FileCreatedEvent: src_path='e:/cclasdir\\2020生物氧化表格.xlsx'>
+2020Mar25-11:20:06 root DEBUG <FileCreatedEvent: src_path='e:/cclasdir\\2020生物氧化表格.xlsx'>
+2020Mar25-11:20:23 root DEBUG <FileCreatedEvent: src_path='e:/cclasdir\\2020生物氧化表格.xlsx'>
+2020Mar25-11:39:01 root DEBUG <FileCreatedEvent: src_path='e:/cclasdir\\2020生物氧化表格.xlsx'>
+2020Mar25-11:39:17 root DEBUG <FileCreatedEvent: src_path='e:/cclasdir\\2020生物氧化表格.xlsx'>
+2020Mar25-11:41:30 root DEBUG WatchDog Observer is startting.....
+2020Mar25-11:41:30 root DEBUG patterns=['*2020*.XLSX']
+2020Mar25-11:41:30 root DEBUG path=e:/cclasdir
+2020Mar25-11:41:30 root DEBUG delay=0.01
+2020Mar25-11:41:30 root DEBUG beep=True
+2020Mar25-11:42:24 root DEBUG <FileCreatedEvent: src_path='e:/cclasdir\\2020生物氧化表格.xlsx'>
+2020Mar25-11:43:30 root DEBUG <FileCreatedEvent: src_path='e:/cclasdir\\2020生物氧化表格.xlsx'>
+2020Mar25-11:51:16 root DEBUG <FileCreatedEvent: src_path='e:/cclasdir\\2020生物氧化表格.xlsx'>
+2020Mar25-11:53:28 root DEBUG <FileCreatedEvent: src_path='e:/cclasdir\\2020生物氧化表格.xlsx'>
+2020Mar25-11:56:44 root DEBUG <FileCreatedEvent: src_path='e:/cclasdir\\2020生物氧化表格.xlsx'>
+2020Mar25-11:58:06 root DEBUG <FileCreatedEvent: src_path='e:/cclasdir\\2020生物氧化表格.xlsx'>
+2020Mar25-11:58:29 root DEBUG <FileCreatedEvent: src_path='e:/cclasdir\\2020生物氧化表格.xlsx'>
+2020Mar25-11:59:04 root DEBUG <FileCreatedEvent: src_path='e:/cclasdir\\2020生物氧化表格.xlsx'>
+2020Mar25-12:05:18 root DEBUG <FileCreatedEvent: src_path='e:/cclasdir\\2020生物氧化表格.xlsx'>
+2020Mar25-13:26:19 root DEBUG <FileCreatedEvent: src_path='e:/cclasdir\\2020生物氧化表格.xlsx'>
+2020Mar25-13:45:46 root DEBUG <FileCreatedEvent: src_path='e:/cclasdir\\2020细菌氧化.xlsx'>
+2020Mar25-13:45:53 root DEBUG <FileCreatedEvent: src_path='e:/cclasdir\\2020生物氧化.xlsx'>
+2020Mar25-13:45:59 root DEBUG <FileCreatedEvent: src_path='e:/cclasdir\\2020环保.xlsx'>
+2020Mar25-14:56:52 root DEBUG <FileCreatedEvent: src_path='e:/cclasdir\\副本2020细菌氧化.xlsx'>
+2020Mar25-14:57:38 root DEBUG <FileCreatedEvent: src_path='e:/cclasdir\\副本2020环保.xlsx'>

@@ -35,8 +35,7 @@ class WatchDogObServer():
         # print(event)
         # result = self.parser.startProcess1(event)
         if config.getboolean('watchdog', 'beep'):
-            winsound.Beep(300, 500)
-        # tkinter.messagebox.askyesnocancel('提示', '要执行此操作吗')
+            winsound.Beep(800, 500)
 
         self.logger.debug(event)
 

@@ -20,36 +20,43 @@ class DataFileParser():
         newfilename = (newpath + fileinfo.get('sep') + prefix + '_' + fileinfo.get('main') + '.json')
         return newfilename
 
-    # 获取化验元素列表
-    def getElementsDF(self, dataframe: DataFrame):
-        elementsDF = dataframe.iloc[:1]
-        # print(elementsDF)
-        return elementsDF
-
     # 解析 生物氧化表格 解毒流程样
-    def swyh_jdlcyWorker(self, swyh_jdlcy_filename: str):
+    def getSwyhjdlcyDF(self, filename: str):
         # 1.读取
         sheet_name = '解毒流程样'
         dict = {'sheet_name': sheet_name, 'header': None, }
-        jdlcyDf = pd.read_excel(io=swyh_jdlcy_filename, **dict)
+        jdlcyDf = pd.read_excel(io=filename, **dict)
+        elementList = jdlcyDf.iloc[0:1].values.tolist()
+
         # 2填充空缺值
         jdlcyDf[0].fillna(method='ffill', inplace=True)
         jdlcyDf[1].fillna(method='ffill', inplace=True)
+
         # 3删除表头
         jdlcyDf.drop(axis=0, index=[0, 1], inplace=True)
+
         # 4日期时间格式
-        jdlcyDf[0] = jdlcyDf[0].dt.strftime('%Y-%m-%d')
-        # jdlcyDf[1] = jdlcyDf[1].dt.strftime('%H:%M')
-        # 5清除空行、列
+        jdlcyDf[0] = jdlcyDf[0].dt.strftime('%y-%m-%d')
+        jdlcyDf[1] = jdlcyDf[1].dt.strftime('%H:%M')
+
+        # 5清除空行
         jdlcyDf.dropna(axis=0, how='all', inplace=True)
         # jdlcyDf.dropna(axis=1, how='all', inplace=True)
         # 6填充空数据
-        jdlcyDf.fillna('', inplace=True)
+        # jdlcyDf.fillna('', inplace=True)
         # 7?重新命名列
-        # jdlcyDf.columns = ['DATE', 'TIME', 'SIMPLE_NAME', 'TCN', 'CN', 'AS', 'SCN', 'NACN', 'HG']
+        jdlcyDf.columns = elementList
         # 8?重新建立索引
         jdlcyDf.reset_index(drop=True, inplace=True)
         return jdlcyDf
+
+    # 获取化验元素列表
+    def getElementsDF(self, filename: str, sheet_name: str):
+        # sheet_name = '解毒流程样'
+        dict = {'sheet_name': sheet_name, 'header': None, }
+        elementsDF = pd.read_excel(io=filename, **dict)
+        # elements = elementsDF.iloc[0:1].values.tolist()[0]
+        return elementsDF.iloc[0:1]
 
     # 序列化
     def toSeries(self, dataFrame: DataFrame, jsonfilename: str):
@@ -66,6 +73,7 @@ class DataFileParser():
     # 获取比较不同
     def getDiff(self, newDF: DataFrame, oldDF: DataFrame):
         difficut = pd.concat([newDF, oldDF, oldDF]).drop_duplicates(keep=False)
+        difficut.fillna('', inplace=True)
         return difficut
 
 
@@ -77,34 +85,63 @@ if __name__ == '__main__':
 
     # 读取数据
     filename = 'e:/cclasdir/2020生物氧化表格.xlsx'
-    newDF = dataFileParser.swyh_jdlcyWorker(swyh_jdlcy_filename=filename)
-    # print(newDF.shape)
+    sheet_name = '解毒流程样'
 
-    # 获取新数据的各个元素
-    elementsDF = dataFileParser.getElementsDF(newDF)
-    print('========elements==========')
-    print(elementsDF)
+    jdlcyElementDF = dataFileParser.getElementsDF(filename=filename, sheet_name=sheet_name)
+    print('===jdlcyElementDF===')
+    print(jdlcyElementDF)
+    jdlcyDF = dataFileParser.getSwyhjdlcyDF(filename=filename)
+    print('====jdlcyDF=======')
+    print(jdlcyDF)
 
-    # 序列化新数据
-    newFile = dataFileParser.filePathNameConverter(filename=filename, prefix='new')
-    dataFileParser.toSeries(jsonfilename=newFile, dataFrame=newDF)
-
-    # 反序列化旧数据
     oldFile = dataFileParser.filePathNameConverter(filename=filename, prefix='old')
+    oldDF = dataFileParser.fromSeries(oldFile)
+    oldDF = pd.concat([jdlcyElementDF, oldDF])
 
-    # 扩充旧数据的列内容
-    oldDF = dataFileParser.fromSeries(jsonfilename=oldFile)
-    oldDF = pd.concat([elementsDF, oldDF])
-    print(oldDF)
+    increamentDF = DataFrame(jdlcyElementDF.values.tolist())
+    increamentDF = pd.concat([oldDF, increamentDF])
+    increamentDF = pd.concat([jdlcyDF, increamentDF]).drop_duplicates(keep=False)
+    print('======increamentDF======')
+    print(increamentDF)
 
-    # 反序列化新数据
-    newDF = dataFileParser.fromSeries(jsonfilename=newFile)
+#
+# year = str(jdlcyDF.iloc[0, 0]).split('-')[0]
+# mouth = str(jdlcyDF.iloc[0, 0]).split('-')[1]
+# print('%-10s%-15s' % (year, mouth))
 
-    # 数据比较获取增量
-    result = dataFileParser.getDiff(newDF=newDF, oldDF=oldDF)
-
-    # 如果存在增量
-    # print(result.shape[0])
-    if (result.shape[0]):
-        dataFileParser.toSeries(dataFrame=newDF, jsonfilename=oldFile)
-        print(result)
+# 获取新数据的各个元素
+# elementsDF = dataFileParser.getElementsDF(newDF)
+# print('========elements==========')
+# print(elementsDF.shape)
+# print(elementsDF)
+#
+# # 序列化新数据
+# newFile = dataFileParser.filePathNameConverter(filename=filename, prefix='new')
+# dataFileParser.toSeries(jsonfilename=newFile, dataFrame=newDF)
+# #
+# # # 反序列化旧数据
+# oldFile = dataFileParser.filePathNameConverter(filename=filename, prefix='old')
+#
+# # 扩充旧数据的列内容
+# oldDF = dataFileParser.fromSeries(jsonfilename=oldFile)
+# # print('====oldDF=======')
+# # print(oldDF.shape)
+# # print(oldDF)
+#
+# oldDF = pd.concat([elementsDF, oldDF])
+# print('=====oldDF======')
+# print(oldDF)
+# #
+# # 反序列化新数据
+# newDF = dataFileParser.fromSeries(jsonfilename=newFile)
+#
+# # 数据比较获取增量
+# result = dataFileParser.getDiff(newDF=newDF, oldDF=oldDF)
+#
+# # 如果存在增量
+# # print(result.shape[0])
+# if (result.shape[0]):
+#     dataFileParser.toSeries(dataFrame=newDF, jsonfilename=oldFile)
+# print('======增量========')
+# print(result.shape)
+# print(result)
