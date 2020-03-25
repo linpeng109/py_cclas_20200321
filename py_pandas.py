@@ -23,7 +23,7 @@ class DataFileParser():
     # 解析 生物氧化表格 解毒流程样
     def getSwyhjdlcyDF(self, filename: str):
         # 1.读取
-        sheet_name = '解毒流程样'
+        sheet_name = 'JDY'
         dict = {'sheet_name': sheet_name, 'header': None, }
         jdlcyDf = pd.read_excel(io=filename, **dict)
         elementList = jdlcyDf.iloc[0:1].values.tolist()
@@ -46,7 +46,7 @@ class DataFileParser():
         # jdlcyDf.fillna('', inplace=True)
 
         # 7重新命名列
-        jdlcyDf.columns = elementList
+        # jdlcyDf.columns = elementList
         # 8?重新建立索引
         jdlcyDf.reset_index(drop=True, inplace=True)
         return jdlcyDf
@@ -85,27 +85,28 @@ if __name__ == '__main__':
     dataFileParser = DataFileParser(config=config, logger=logger)
 
     # 读取数据
-    filename = 'e:/cclasdir/2020生物氧化表格.xlsx'
-    sheet_name = '解毒流程样'
+    filename = 'e:/cclasdir/副本2020生物氧化.xlsx'
+    sheet_name = 'JDY'
 
     jdlcyElementDF = dataFileParser.getElementsDF(filename=filename, sheet_name=sheet_name)
     print('===jdlcyElementDF===')
     print(jdlcyElementDF)
 
     jdlcyDF = dataFileParser.getSwyhjdlcyDF(filename=filename)
-    print('====jdlcyDF=======')
+    print('\n====jdlcyDF=======')
     print(jdlcyDF)
 
     oldFile = dataFileParser.filePathNameConverter(filename=filename, prefix='old')
+    # dataFileParser.toSeries(jdlcyElementDF, oldFile)
     oldDF = dataFileParser.fromSeries(oldFile)
-    print('====oldDF=======')
+    print('\n====oldDF=======')
     print(oldDF)
-
-    increamentDF = DataFrame(jdlcyElementDF.values.tolist())
-    oldDF = pd.concat([increamentDF, oldDF]).drop_duplicates(keep=False)
-    increamentDF = pd.concat([increamentDF, jdlcyDF]).drop_duplicates(keep=False)
-    print('======increamentDF======')
-    print(oldDF)
+    #
+    # increamentDF = DataFrame(jdlcyElementDF.values.tolist())
+    # # oldDF = pd.concat([increamentDF, jdlcyDF]).drop_duplicates(keep=False)
+    # increamentDF = pd.concat([oldDF, jdlcyDF]).drop_duplicates(keep=False)
+    # print('\n======increamentDF======')
+    # print(increamentDF)
 
 #
 # year = str(jdlcyDF.iloc[0, 0]).split('-')[0]
