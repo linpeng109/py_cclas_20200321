@@ -5,6 +5,9 @@ from py_config import ConfigFactory
 from py_logging import LoggerFactory
 from py_path import Path
 
+from collections import Counter
+import numpy as np
+
 
 class DataFileParser():
     # 初始化
@@ -26,56 +29,66 @@ class DataFileParser():
         sheet_name = 'JDY'
         dict = {'sheet_name': sheet_name, 'header': None, }
         jdlcyDf = pd.read_excel(io=filename, **dict)
-        elementList = jdlcyDf.iloc[0:1].values.tolist()
-
-        # 2填充空缺值
+        # print('=====是否包含nan列名=====')
+        # print(jdlcyDf.iloc[0:1].isnull().sum().sum() > 0)
+        # print('=====是否包含重复列名=====')
+        # print(jdlcyDf.iloc[0:1].isnull().sum().sum() > 0)
+        # # 获取列名
+        elementList = jdlcyDf.iloc[0:1].values.tolist()[0]
+        # print(elementList)
+        # 填充空缺值
         jdlcyDf[0].fillna(method='ffill', inplace=True)
         jdlcyDf[1].fillna(method='ffill', inplace=True)
-
-        # 3删除表头
+        # 删除表头
         jdlcyDf.drop(axis=0, index=[0, 1], inplace=True)
-
-        # 4日期时间格式
-        jdlcyDf[0] = jdlcyDf[0].dt.strftime('%y-%m-%d')
+        # 日期时间格式
+        jdlcyDf[0] = jdlcyDf[0].dt.strftime('%Y-%m-%d')
+        # jdlcyDf[0].astype("object")
         jdlcyDf[1] = jdlcyDf[1].dt.strftime('%H:%M')
-
-        # 5清除空行
+        # 修改列名
+        jdlcyDf.columns = elementList
+        # 清除空行
         jdlcyDf.dropna(axis=0, how='all', inplace=True)
-        # jdlcyDf.dropna(axis=1, how='all', inplace=True)
-        # 6填充空数据
-        # jdlcyDf.fillna('', inplace=True)
-
-        # 7重新命名列
-        # jdlcyDf.columns = elementList
-        # 8?重新建立索引
+        # 填充空数据
+        jdlcyDf.fillna('', inplace=True)
+        # 重新建立索引
         jdlcyDf.reset_index(drop=True, inplace=True)
         return jdlcyDf
 
-    # 获取化验元素列表
-    def getElementsDF(self, filename: str, sheet_name: str):
-        # sheet_name = '解毒流程样'
-        dict = {'sheet_name': sheet_name, 'header': None, }
-        elementsDF = pd.read_excel(io=filename, **dict)
-        # elements = elementsDF.iloc[0:1].values.tolist()[0]
-        return elementsDF.iloc[0:1]
-
     # 序列化
     def toSeries(self, dataFrame: DataFrame, jsonfilename: str):
-        return dataFrame.to_json(jsonfilename, orient='index', force_ascii=False)
+        # df = dataFrame.to_csv(path_or_buf=jsonfilename, encoding='gbk', index=None)
+        df = dataFrame.to_json(path_or_buf=jsonfilename, force_ascii=False)
+        return df
 
     # 反序列化
     def fromSeries(self, jsonfilename: str):
         try:
-            dataframe = pd.read_json(path_or_buf=jsonfilename, orient='index', encoding='gbk')
+            # dataframe = pd.read_csv(filepath_or_buffer=jsonfilename, encoding='gbk', na_filter=None)
+            df = pd.read_json(path_or_buf=jsonfilename, encoding='gbk')
         except ValueError:
-            dataframe = DataFrame()
-        return dataframe
+            df = DataFrame()
+        return df
 
-    # 获取比较不同
-    def getDiff(self, newDF: DataFrame, oldDF: DataFrame):
-        difficut = pd.concat([newDF, oldDF, oldDF]).drop_duplicates(keep=False)
-        difficut.fillna('', inplace=True)
-        return difficut
+    # 检测列名是否重复
+    def colsIsDuplicate(self, dataFrame: DataFrame):
+        columnList = dataFrame.columns.tolist()
+
+        columnDict = dict(Counter(columnList))
+        # key = 0
+        for key, value in columnDict.items():
+            if value > 1:
+                return True
+            if np.isnan(key):
+                return True
+        return True
+
+
+# 获取比较不同
+def getDiff(self, newDF: DataFrame, oldDF: DataFrame):
+    difficut = pd.concat([newDF, oldDF, oldDF]).drop_duplicates(keep=False)
+    difficut.fillna('', inplace=True)
+    return difficut
 
 
 if __name__ == '__main__':
@@ -85,67 +98,45 @@ if __name__ == '__main__':
     dataFileParser = DataFileParser(config=config, logger=logger)
 
     # 读取数据
-    filename = 'e:/cclasdir/副本2020生物氧化.xlsx'
+    filename = 'e:/cclasdir/2020生物氧化表格2.xlsx'
     sheet_name = 'JDY'
 
-    jdlcyElementDF = dataFileParser.getElementsDF(filename=filename, sheet_name=sheet_name)
-    print('===jdlcyElementDF===')
-    print(jdlcyElementDF)
-
     jdlcyDF = dataFileParser.getSwyhjdlcyDF(filename=filename)
-    print('\n====jdlcyDF=======')
-    print(jdlcyDF)
+    print('\n===jdlcyDF===')
+
+    columnsList = jdlcyDF.columns.tolist()
+    colDF = DataFrame(columnsList)
+    isNull = colDF.isnull().sum().sum()
+    isDuplicate = colDF.duplicated().sum().sum()
+    if isNull > 0:
+        raise TypeError('数据转换失败：化验元素项包含空值')
+    if isDuplicate > 0:
+        raise TypeError('数据转换失败：化验元素项包含重复值')
+
+    newFile = dataFileParser.filePathNameConverter(filename=filename, prefix='new')
+    dataFileParser.toSeries(dataFrame=jdlcyDF, jsonfilename=newFile)
+    newDF = dataFileParser.fromSeries(jsonfilename=newFile)
+    print('\n===newDF===')
+    print(newDF.dtypes)
+    # print(newDF)
 
     oldFile = dataFileParser.filePathNameConverter(filename=filename, prefix='old')
-    # dataFileParser.toSeries(jdlcyElementDF, oldFile)
+    # dataFileParser.toSeries(jdlcyDF, oldFile)
     oldDF = dataFileParser.fromSeries(oldFile)
-    print('\n====oldDF=======')
-    print(oldDF)
-    #
-    # increamentDF = DataFrame(jdlcyElementDF.values.tolist())
-    # # oldDF = pd.concat([increamentDF, jdlcyDF]).drop_duplicates(keep=False)
-    # increamentDF = pd.concat([oldDF, jdlcyDF]).drop_duplicates(keep=False)
-    # print('\n======increamentDF======')
-    # print(increamentDF)
+    # print('\n====oldDF=======')
+    print(oldDF.dtypes)
+    # print(oldDF)
 
-#
-# year = str(jdlcyDF.iloc[0, 0]).split('-')[0]
-# mouth = str(jdlcyDF.iloc[0, 0]).split('-')[1]
-# print('%-10s%-15s' % (year, mouth))
+    tmpDF = DataFrame(columns=newDF.columns.tolist())
+    tmpDF = pd.concat([tmpDF, oldDF]).drop_duplicates(keep=False).fillna('')
+    tmpfile = dataFileParser.filePathNameConverter(filename=filename, prefix='tmp')
+    dataFileParser.toSeries(dataFrame=tmpDF, jsonfilename=tmpfile)
+    tmpDF = dataFileParser.fromSeries(jsonfilename=tmpfile)
+    # print('\n===tmpDF===')
+    print(tmpDF.dtypes)
+    # print(tmpDF)
 
-# 获取新数据的各个元素
-# elementsDF = dataFileParser.getElementsDF(newDF)
-# print('========elements==========')
-# print(elementsDF.shape)
-# print(elementsDF)
-#
-# # 序列化新数据
-# newFile = dataFileParser.filePathNameConverter(filename=filename, prefix='new')
-# dataFileParser.toSeries(jsonfilename=newFile, dataFrame=newDF)
-# #
-# # # 反序列化旧数据
-# oldFile = dataFileParser.filePathNameConverter(filename=filename, prefix='old')
-#
-# # 扩充旧数据的列内容
-# oldDF = dataFileParser.fromSeries(jsonfilename=oldFile)
-# # print('====oldDF=======')
-# # print(oldDF.shape)
-# # print(oldDF)
-#
-# oldDF = pd.concat([elementsDF, oldDF])
-# print('=====oldDF======')
-# print(oldDF)
-# #
-# # 反序列化新数据
-# newDF = dataFileParser.fromSeries(jsonfilename=newFile)
-#
-# # 数据比较获取增量
-# result = dataFileParser.getDiff(newDF=newDF, oldDF=oldDF)
-#
-# # 如果存在增量
-# # print(result.shape[0])
-# if (result.shape[0]):
-#     dataFileParser.toSeries(dataFrame=newDF, jsonfilename=oldFile)
-# print('======增量========')
-# print(result.shape)
-# print(result)
+    increamentDF = pd.concat([tmpDF, newDF, tmpDF]).drop_duplicates(keep=False)
+    print('\n===increamentDF===')
+    # print(increamentDF.dtypes)
+    print(increamentDF)

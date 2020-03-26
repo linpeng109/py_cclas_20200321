@@ -28,7 +28,7 @@ class Path():
         isExist = os.path.isdir(outputPath)
         if not isExist:
             os.makedirs(outputPath)
-            print('The Path is not exist. I have make it.')
+            print('The Path is not exist. Created it.')
         else:
             print('The path is exit')
 
