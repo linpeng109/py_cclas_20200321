@@ -16,7 +16,7 @@ class Path():
         return {'driver': driver, 'sep': sep, 'path': path, 'filename': filename, 'main': main, 'ext': ext}
 
     @classmethod
-    def filenameIsContains(self, fullPathFileName, strs):
+    def filenameIsContains(self, fullPathFileName: str, strs):
         filename = Path.splitFullPathFileName(fullPathFileName).get('filename').lower()
         result = True
         for str in strs:
@@ -28,9 +28,9 @@ class Path():
         isExist = os.path.isdir(outputPath)
         if not isExist:
             os.makedirs(outputPath)
-            print('The Path is not exist. Created it.')
+            print('The Path(%s) is not exist. Created it.' % outputPath)
         else:
-            print('The path is exit')
+            print('The Path(%s) is exit' % outputPath)
 
 
 if __name__ == '__main__':

@@ -10,7 +10,7 @@ from watchdog.observers.polling import PollingObserver as Observer
 
 from py_config import ConfigFactory
 from py_logging import LoggerFactory
-from py_pandas import DataFileParser
+from py_pandas_jdy import JDYParser
 
 
 # from py_tkinter import AppUI
@@ -21,7 +21,7 @@ class WatchDogObServer():
     def __init__(self, config, logger):
         self.config = config
         self.logger = logger
-        self.parser = DataFileParser(config=config, logger=logger)
+        self.parser = JDYParser(config=config, logger=logger)
 
     def on_modified(self, event):
         # print(event)
