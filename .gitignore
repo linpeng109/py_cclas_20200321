@@ -1,5 +1,6 @@
 .idea/
 *.log*
-venv/
-build/
-dist/
+venv/*
+build/*
+dist/*
+__pycache__/*
