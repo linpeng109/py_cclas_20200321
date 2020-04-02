@@ -1,3 +1,4 @@
+import os
 from datetime import datetime
 
 import pandas as pd
@@ -36,7 +37,7 @@ class Parser():
             df = DataFrame()
         return df
 
-    # 检查列名是否重复或包含nan
+    # 检查列名是否重复或包含NAN
     def checkColumnsIsContainsDuplicateOrNan(self, dataFrame: DataFrame):
         columnsList = dataFrame.columns.tolist()
         colDF = DataFrame(columnsList)
@@ -51,10 +52,8 @@ class Parser():
     def getIncreamentDF(self, srcDF: DataFrame, filename: str, sheet_name: str):
 
         ('===srcDF===')
-        self.logger.debug(srcDF.dtypes)
-        self.logger.debug(srcDF)
-
-        self.checkColumnsIsContainsDuplicateOrNan(srcDF)
+        # self.logger.debug(srcDF.dtypes)
+        # self.logger.debug(srcDF)
 
         newFile = self.filePathNameConverter(filename=filename, sheet_name=sheet_name, prefix='new')
         self.toSeries(dataFrame=srcDF, filename=newFile)
@@ -71,7 +70,9 @@ class Parser():
         self.logger.debug(oldDF)
 
         tmp_df = DataFrame(columns=newDF.columns.tolist())
-        tmp_df = pd.concat([tmp_df, oldDF]).drop_duplicates(keep=False).fillna('')
+        tmp_df = pd.concat([tmp_df, oldDF])
+        tmp_df.fillna('', inplace=True)
+        tmp_df.drop_duplicates(keep=False).fillna('')
         tmp_file = self.filePathNameConverter(filename=filename, sheet_name=sheet_name, prefix='tmp')
         self.toSeries(dataFrame=tmp_df, filename=tmp_file)
         tmp_df = self.fromSeries(filename=tmp_file)
@@ -80,28 +81,73 @@ class Parser():
         self.logger.debug(tmp_df)
 
         increamentDF = pd.concat([tmp_df, newDF, tmp_df]).drop_duplicates(keep=False)
-        self.logger.debug('===increamentDF===')
-        self.logger.debug(increamentDF.dtypes)
+        self.logger.debug('===IncreamentDF===')
+        self.logger.debug(increamentDF.info())
         self.logger.debug(increamentDF)
 
         return increamentDF
 
-    # 拼接
-    def buildJDYReport(self, dataframe: DataFrame):
-        year_month = datetime.strftime(dataframe.loc[0, 'DATE'], '%y%m')
-        month_day = datetime.strftime(dataframe.loc[0, 'DATE'], '%m%d')
-        sheet_name = 'QTY'
-        method = 'SY001'
-        hour = dataframe.loc[0, 'TIME'].split(':')[0]
-        sampleid = str(dataframe.loc[0, 'SAMPLEID'])
-        print('sampleid=%s' % sampleid)
-        colsNum = len(dataframe.columns)
-        results = ('%-20s%-10s%-20s%02d' %
-                   (sheet_name + year_month,
-                    method,
-                    month_day + '-' + hour + '-' + sampleid,
-                    colsNum - 4))
-        for i in range(4, colsNum):
-            results = results + ('%-10s%-10s' % (dataframe.columns[i], dataframe.iloc[0, i]))
+    # 生成数据报告列表
+    def buildReport(self, dataframe: DataFrame, sheet_name: str, method: str, startEleNum: int):
+        reports = []
+        for row in dataframe.itertuples():
+            # 获取特定格式的日期和时间值
+            year_month = datetime.strftime(getattr(row, 'DATE'), '%y%m')
+            month_day = datetime.strftime(getattr(row, 'DATE'), '%m%d')
+            # 若不存在TIME字段，则以00替代
+            try:
+                hour = getattr(row, 'TIME').split(':')[0]
+            except AttributeError:
+                hour = '00'
+            sampleid = str(getattr(row, 'SAMPLEID'))
+            # 获取列数
+            colsNum = len(dataframe.columns)
+            # 非空列数
+            not_null_cols_num = 0
+            report = ''
+            for j in range(startEleNum, colsNum):
+                # 只添加非空值的数据项
+                if (row[j + 1] != ''):
+                    report = report + ('%-10s%-10.8s' % (dataframe.columns[j], row[j + 1]))
+                    not_null_cols_num = not_null_cols_num + 1
+            # 如果存在化验元素则生成报告
+            if not_null_cols_num > 0:
+                # 输出格式化
+                report = ('%-20s%-10s%-20s%02d%s' %
+                          (sheet_name + year_month,
+                           method,
+                           month_day + '-' + hour + '-' + sampleid,
+                           not_null_cols_num,
+                           report))
+                reports.append(report)
+        return reports
 
-        return results
+    # 写出单行数据文件
+    def outputReport(self, reports: list):
+        print('===reports===')
+        for i in range(len(reports)):
+            outpath = self.config.get('cclas', 'outputdir')
+            if os.path.isdir(outpath) != True:
+                os.mkdir(outpath)
+            filename = '%s/%s_%05d_%s.txt' % (
+                outpath,
+                reports[i][0:20].replace(' ', ''),
+                i + 1,
+                reports[i][30:41].replace(' ', ''))
+            print(filename)
+            with open(filename, 'w+') as file:
+                file.write(reports[i])
+                file.close()
+            self.logger.debug(reports[i])
+
+    # 处理文件
+    def reportFileHandle(self, filename: str, sheet_name: str):
+        oldFile = self.filePathNameConverter(filename=filename, sheet_name=sheet_name, prefix='old')
+        tmpFile = self.filePathNameConverter(filename=filename, sheet_name=sheet_name, prefix='tmp')
+        newFile = self.filePathNameConverter(filename=filename, sheet_name=sheet_name, prefix='new')
+        if os.path.isfile(tmpFile):
+            os.remove(tmpFile)
+        if os.path.isfile(oldFile):
+            os.remove(oldFile)
+        if os.path.isfile(newFile):
+            os.rename(newFile, oldFile)
